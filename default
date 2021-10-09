@@ -1,0 +1,169 @@
+default vesamenu.c32
+timeout 600
+
+display boot.msg
+
+# Clear the screen when exiting the menu, instead of leaving the menu displayed.
+# For vesamenu, this means the graphical background is still displayed without
+# the menu itself for as long as the screen remains in graphics mode.
+menu clear
+menu background splash.png
+menu title CentOS 7
+menu vshift 8
+menu rows 18
+menu margin 8
+#menu hidden
+menu helpmsgrow 15
+menu tabmsgrow 13
+
+# Border Area
+menu color border * #00000000 #00000000 none
+
+# Selected item
+menu color sel 0 #ffffffff #00000000 none
+
+# Title bar
+menu color title 0 #ff7ba3d0 #00000000 none
+
+# Press [Tab] message
+menu color tabmsg 0 #ff3a6496 #00000000 none
+
+# Unselected menu item
+menu color unsel 0 #84b8ffff #00000000 none
+
+# Selected hotkey
+menu color hotsel 0 #84b8ffff #00000000 none
+
+# Unselected hotkey
+menu color hotkey 0 #ffffffff #00000000 none
+
+# Help text
+menu color help 0 #ffffffff #00000000 none
+
+# A scrollbar of some type? Not sure.
+menu color scrollbar 0 #ffffffff #ff355594 none
+
+# Timeout msg
+menu color timeout 0 #ffffffff #00000000 none
+menu color timeout_msg 0 #ffffffff #00000000 none
+
+# Command prompt text
+menu color cmdmark 0 #84b8ffff #00000000 none
+menu color cmdline 0 #ffffffff #00000000 none
+
+# Do not display the actual menu unless the user presses a key. All that is displayed is a timeout message.
+
+menu tabmsg Press Tab for full configuration options on menu items.
+
+menu separator # insert an empty line
+menu separator # insert an empty line
+
+label linux1
+  menu label ^Install CentOS 7
+  kernel /centos7/vmlinuz
+  append initrd=/centos7/initrd.img method=http://192.168.1.101/centos7/  test ks=http://192.168.1.101/centos7_ks.cfg
+
+label linux2
+  menu label ^Install CentOS 6.5
+  kernel /centos6/vmlinuz
+  append initrd=/centos6/initrd.img   ks=http://192.168.1.101/centos6_ks.cfg
+
+label linux3
+  menu label ^Install Ubuntu18.04
+  kernel /ubuntu18.04/vmlinuz
+  append root=/dev/nfs netboot=nfs  nfsroot=192.168.1.101:/pxe/ubuntu18.04  initrd=/ubuntu18.04/initrd boot=casper auto=true priority=critical automatic-ubiquity   url=http://192.168.1.101/ubuntu.cfg  text nosplash systemd.mask=tmp.mount --
+
+
+
+label linux4
+  menu label ^Install uos-20-Desktop
+  kernel /uos/vmlinuz
+  append root=/dev/nfs  netboot=nfs nfsroot=192.168.1.101:/pxe/uos boot=live union=overlay livecd-installer   url=http://192.168.1.101/uos.cfg  initrd=/uos/initrd.lz 
+
+
+label linux5
+  menu label ^Install deepin
+  kernel /deepin/vmlinuz.efi
+  append root=/dev/nfs netboot=nfs  livecd-installer  nfsroot=192.168.1.101:/pxe/deepin boot=live auto=true priority=critical  url=http://192.168.1.101/uos.cfg  initrd=/deepin/initrd.lz 
+
+
+
+#安装方德不能使用多网口网卡，会卡在网络配置
+label linux6
+  menu label ^Install NFS
+  kernel /NFS/vmlinuz.efi
+  append root=/dev/nfs netboot=nfs   nfsroot=192.168.1.101:/pxe/NFS boot=casper auto=true priority=critical automatic-ubiquity   url=http://192.168.1.101/ubuntu.cfg   initrd=/NFS/initrd.lz
+
+
+label linux7
+  menu label ^Install Ubuntu16.04
+  kernel /ubuntu16.04/vmlinuz.efi
+  append root=/dev/nfs netboot=nfs   nfsroot=192.168.1.101:/pxe/ubuntu16.04 boot=casper auto=true priority=critical automatic-ubiquity  url=http://192.168.1.101/ubuntu.cfg   initrd=/ubuntu16.04/initrd.lz
+
+label linux8
+  menu label ^Install Ubuntu14.04
+  kernel /ubuntu14.04/vmlinuz.efi
+  append root=/dev/nfs netboot=nfs   nfsroot=192.168.1.101:/pxe/ubuntu14.04 boot=casper auto=true priority=critical automatic-ubiquity  url=http://192.168.1.101/ubuntu18.04.cfg   initrd=/ubuntu14.04/initrd.lz
+
+label linux9
+  menu label ^Install uos-20-server
+  kernel /uos-server/vmlinuz
+  append root=/dev/nfs  netboot=nfs nfsroot=192.168.1.101:/pxe/uos.20.server boot=live debian-installer  text  auto=true priority=critical automatic-ubiquity   url=http://192.168.1.101/uos.cfg  initrd=/uos-server/initrd.lz quiet splash
+
+
+
+label check
+  menu label Test this ^media & install CentOS 7
+  menu default
+  kernel centos7/vmlinuz
+  append initrd=centos7/initrd.img inst.stage2=hd:LABEL=CentOS\x207\x20x86_64 rd.live.check quiet
+
+menu separator # insert an empty line
+
+# utilities submenu
+menu begin ^Troubleshooting
+  menu title Troubleshooting
+
+label vesa
+ menu indent count 5
+  menu label Install CentOS 7 in ^basic graphics mode
+  text help
+	Try this option out if you're having trouble installing
+	CentOS 7.
+  endtext
+  kernel vmlinuz
+  append initrd=initrd.img inst.stage2=hd:LABEL=CentOS\x207\x20x86_64 xdriver=vesa nomodeset quiet
+
+label rescue
+  menu indent count 5
+  menu label ^Rescue a CentOS system
+  text help
+	If the system will not boot, this lets you access files
+	and edit config files to try to get it booting again.
+  endtext
+  kernel vmlinuz
+  append initrd=initrd.img inst.stage2=hd:LABEL=CentOS\x207\x20x86_64 rescue quiet
+
+label memtest
+  menu label Run a ^memory test
+  text help
+	If your system is having issues, a problem with your
+	system's memory may be the cause. Use this utility to
+	see if the memory is working correctly.
+  endtext
+  kernel memtest
+
+menu separator # insert an empty line
+
+label local
+  menu label Boot from ^local drive
+  localboot 0xffff
+
+menu separator # insert an empty line
+menu separator # insert an empty line
+
+#label returntomain
+  menu label Return to ^main menu
+  menu exit
+
+menu end
